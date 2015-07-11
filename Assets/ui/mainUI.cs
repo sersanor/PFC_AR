@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Vuforia;
-
+using SimpleJSON;
 
 public class mainUI : MonoBehaviour {
 
@@ -23,7 +23,11 @@ public class mainUI : MonoBehaviour {
 	private bool mustDraw = true;
 	private RaycastHit hit;
 	public Camera Camera;
-
+	public int timer;
+	private bool inet = true;
+	private bool objectTapped = false;
+	private static JSONNode J;
+	private static JSONNode aux;
 
 	private static float DeviceDependentScale
 	{
@@ -37,7 +41,7 @@ public class mainUI : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-		//CameraDevice.Instance.SetFocusMode (CameraDevice.FocusMode.FOCUS_MODE_CONTINUOUSAUTO);
+		//CALL CAMERA
 		m_AboutText = Resources.Load("PFC_About") as TextAsset;
 		mAboutTitleBgStyle = new GUIStyle();
 		mOKButtonBgStyle = new GUIStyle();
@@ -50,11 +54,24 @@ public class mainUI : MonoBehaviour {
 		mOKButtonBgStyle.normal.textColor = Color.white;
 		mAboutTitleBgStyle.alignment = TextAnchor.MiddleLeft;
 		mOKButtonBgStyle.alignment = TextAnchor.MiddleCenter;
+
+		//CHECKING THE CONNECTION
+		CheckConnection ();
+		if (inet) {
+			Debug.Log ("INTERNET DISPONIBLE");
+			// DOWNLOAD JSON if INTERNET
+			StartCoroutine (downloadJson ());
+			
+		} else {
+			Debug.Log ("INTERNET NO DISPONIBLE");		
+		}
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		//CameraDevice.Instance.SetFocusMode (CameraDevice.FocusMode.FOCUS_MODE_NORMAL);
+		timer -= 1;
+		if(timer==0)callAutoFocus ();
 
 		if (Application.platform == RuntimePlatform.WindowsEditor) {
 			checkInputWindows ();
@@ -63,13 +80,27 @@ public class mainUI : MonoBehaviour {
 		}
 	}
 
+	void callAutoFocus(){
+		CameraDevice.Instance.SetFocusMode (CameraDevice.FocusMode.FOCUS_MODE_CONTINUOUSAUTO);
+	}
 
 	void OnGUI (){
 		if (mustDraw) {
-			draw ();
+			draw (mTitle);
+		}
+		if (objectTapped) {
+			draw (aux["nombre"],aux["descCompleta"],"","",aux["coords"],"Cerrar");
 		}
 	}
 
+	void OnApplicationPause(bool pause)
+	{
+		if (!pause)
+		{
+			// App resumed
+			callAutoFocus ();
+		}
+	}
 
 	//DRAW ABOUT PAGE
 	void drawAbout (){
@@ -81,12 +112,12 @@ public class mainUI : MonoBehaviour {
 		GUI.Box(box, "", mStyle);
 	}
 
-	void draw(){
+	void draw(string title, string desc="about", string img="", string modelo3d="", string coords="", string button="OK"){
 		float scale = 1*DeviceDependentScale;
 		mAboutTitleHeight = 80.0f* scale;
 		drawAbout();
 		GUI.Box(new Rect(0,0,Screen.width,mAboutTitleHeight),string.Empty,mAboutTitleBgStyle);
-		GUI.Box(new Rect(ABOUT_TEXT_MARGIN * DeviceDependentScale,0,Screen.width,mAboutTitleHeight),mTitle,mAboutTitleBgStyle);
+		GUI.Box(new Rect(ABOUT_TEXT_MARGIN * DeviceDependentScale,0,Screen.width,mAboutTitleHeight),title,mAboutTitleBgStyle);
 		float width = Screen.width / 1.5f;
 		//float height = startButtonStyle.normal.background.height * scale;
 		float height = mOKButtonBgStyle.normal.background.height * scale;
@@ -107,8 +138,11 @@ public class mainUI : MonoBehaviour {
 		
 		GUILayout.BeginHorizontal();
 		GUILayout.FlexibleSpace();
-		
-		GUILayout.Label(m_AboutText.text);
+
+		if(desc == "about")
+			GUILayout.Label(m_AboutText.text);
+		else
+			GUILayout.Label(desc);
 		
 		GUILayout.FlexibleSpace();
 		GUILayout.EndHorizontal();
@@ -116,11 +150,10 @@ public class mainUI : MonoBehaviour {
 		GUILayout.EndScrollView();
 		
 		GUILayout.EndArea();
-		
 		// if button was pressed, remember to make sure this event is not interpreted as a touch event somewhere else
-		if (GUI.Button(new Rect(left, top, width, height), "OK" ,mOKButtonBgStyle))
+		if (GUI.Button(new Rect(left, top, width, height), button ,mOKButtonBgStyle))
 		{
-			mustDraw = false;
+			mustDraw = objectTapped = false;
 			if(this.OnStartButtonTapped != null)
 			{
 				this.OnStartButtonTapped();
@@ -150,9 +183,49 @@ public class mainUI : MonoBehaviour {
 			if (Physics.Raycast (ray, out raycastHit, 1000.0f) && raycastHit.collider)
 			{
 				Debug.Log (raycastHit.transform.name + "Hitted");
+				aux = J["pdi"][raycastHit.transform.name];
+				objectTapped = true;
+
 			}
 		}
 		
+	}
+
+	IEnumerator CheckConnection()
+	{
+		const float timeout = 10f;
+		float startTime = Time.timeSinceLevelLoad;
+		Ping ping = new Ping("google.com");
+		
+		while (true)
+		{
+			if (ping.isDone)
+			{
+				inet = true;
+				yield break;
+			}
+			if (Time.timeSinceLevelLoad - startTime > timeout)
+			{
+				inet = false;
+				yield break;
+			}
+			
+			yield return new WaitForEndOfFrame();
+		}
+	}
+	IEnumerator downloadJson ()
+	{
+		string url = "http://sersanor.com/pfc/data.json";
+		WWW www = new WWW (url);
+		
+		yield return www;
+		if (www.error == null) {
+			//Sucessfully loaded the JSON string
+			Debug.Log ("Loaded following JSON string" + www.text);
+			J = JSONNode.Parse (www.text);
+		} else {
+			Debug.Log ("ERROR: " + www.error);
+		}
 	}
 
 }
