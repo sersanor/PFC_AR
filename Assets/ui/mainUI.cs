@@ -21,6 +21,8 @@ public class mainUI : MonoBehaviour {
 	private Vector2 mScrollPosition;
 	public System.Action OnStartButtonTapped;
 	private bool mustDraw = true;
+	private RaycastHit hit;
+	public Camera Camera;
 
 
 	private static float DeviceDependentScale
@@ -52,7 +54,13 @@ public class mainUI : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		CameraDevice.Instance.SetFocusMode (CameraDevice.FocusMode.FOCUS_MODE_NORMAL);
+		//CameraDevice.Instance.SetFocusMode (CameraDevice.FocusMode.FOCUS_MODE_NORMAL);
+
+		if (Application.platform == RuntimePlatform.WindowsEditor) {
+			checkInputWindows ();
+		} else {
+			checkInputMobile ();
+		}
 	}
 
 
@@ -118,5 +126,33 @@ public class mainUI : MonoBehaviour {
 				this.OnStartButtonTapped();
 			}
 		}
+	} // END DRAW
+
+	void checkInputMobile(){
+		
+		for(int i = 0; i < Input.touchCount; ++i)
+		if (Input.GetTouch(i).phase.Equals(TouchPhase.Began)) {
+			{
+				Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(i).position);
+				if (Physics.Raycast(ray, out hit)) {
+					hit.transform.gameObject.SendMessage("OnMouseDown");
+				}
+			}
+			
+		}
 	}
+	
+	void checkInputWindows(){
+		if (Input.GetKeyDown (KeyCode.Mouse0))
+		{
+			RaycastHit raycastHit;
+			Ray ray = Camera.ScreenPointToRay (Input.mousePosition);
+			if (Physics.Raycast (ray, out raycastHit, 1000.0f) && raycastHit.collider)
+			{
+				Debug.Log (raycastHit.transform.name + "Hitted");
+			}
+		}
+		
+	}
+
 }
