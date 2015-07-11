@@ -89,7 +89,7 @@ public class mainUI : MonoBehaviour {
 			draw (mTitle);
 		}
 		if (objectTapped) {
-			draw (aux["nombre"],aux["descCompleta"],"","",aux["coords"],"Cerrar");
+			draw (aux["nombre"],aux["descCompleta"],"","",aux["coords"],"","Cerrar",aux["coords"]);
 		}
 	}
 
@@ -112,7 +112,7 @@ public class mainUI : MonoBehaviour {
 		GUI.Box(box, "", mStyle);
 	}
 
-	void draw(string title, string desc="about", string img="", string modelo3d="", string coords="", string button="OK"){
+	void draw(string title, string desc="about", string img="", string modelo3d="", string coords="", string model3d="", string button="OK", string maps=""){
 		float scale = 1*DeviceDependentScale;
 		mAboutTitleHeight = 80.0f* scale;
 		drawAbout();
@@ -150,14 +150,20 @@ public class mainUI : MonoBehaviour {
 		GUILayout.EndScrollView();
 		
 		GUILayout.EndArea();
+		if(model3d!="")
+		if (GUI.Button(new Rect(left/2, top, width/3, height), "3D Scene" ,mOKButtonBgStyle))
+		{
+			//Draw new scene
+		}
 		// if button was pressed, remember to make sure this event is not interpreted as a touch event somewhere else
-		if (GUI.Button(new Rect(left, top, width, height), button ,mOKButtonBgStyle))
+		if (GUI.Button(new Rect(left+width/3, top, width/3, height), button ,mOKButtonBgStyle))
 		{
 			mustDraw = objectTapped = false;
-			if(this.OnStartButtonTapped != null)
-			{
-				this.OnStartButtonTapped();
-			}
+		}
+		if(maps!="")
+		if (GUI.Button(new Rect(left+left/2+width*2/3, top, width/3, height), "MAPS" ,mOKButtonBgStyle))
+		{
+			Application.OpenURL(maps);
 		}
 	} // END DRAW
 
@@ -169,6 +175,8 @@ public class mainUI : MonoBehaviour {
 				Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(i).position);
 				if (Physics.Raycast(ray, out hit)) {
 					hit.transform.gameObject.SendMessage("OnMouseDown");
+					aux = J["pdi"][hit.transform.gameObject.name];
+					objectTapped = true;
 				}
 			}
 			
