@@ -159,6 +159,8 @@ public class mainUI : MonoBehaviour {
 		if (GUI.Button(new Rect(left+width/3, top, width/3, height), button ,mOKButtonBgStyle))
 		{
 			mustDraw = objectTapped = false;
+			//update the vector pos
+			mScrollPosition = new Vector2();
 		}
 		if(maps!="")
 		if (GUI.Button(new Rect(left+left/2+width*2/3, top, width/3, height), "MAPS" ,mOKButtonBgStyle))
