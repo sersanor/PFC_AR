@@ -33,6 +33,7 @@ public class mainUI : MonoBehaviour
 	private bool objectTapped = false;
 	private static JSONNode J;
 	private static JSONNode aux;
+	private bool GUIdrawed = true;
 
 	private static float DeviceDependentScale {
 		get {
@@ -81,9 +82,9 @@ public class mainUI : MonoBehaviour
 		if (timer == 0)
 			callAutoFocus ();
 
-		if (Application.platform == RuntimePlatform.WindowsEditor) {
+		if (Application.platform == RuntimePlatform.WindowsEditor && !GUIdrawed) {
 			checkInputWindows ();
-		} else {
+		} else if (!GUIdrawed) {
 			checkInputMobile ();
 		}
 
@@ -104,7 +105,10 @@ public class mainUI : MonoBehaviour
 			draw (mTitle);
 		}
 		if (objectTapped) {
+			GUIdrawed = true;
 			draw (aux ["nombre"], aux ["descCompleta"], "", aux ["modelo3d"].ToString (), "Cerrar", aux ["coords"]);
+		} else {
+			GUIdrawed = false;
 		}
 	}
 
@@ -149,7 +153,7 @@ public class mainUI : MonoBehaviour
 		                             Screen.width - (ABOUT_TEXT_MARGIN * DeviceDependentScale),
 		                             Screen.height - (mStartButtonAreaHeight) - mAboutTitleHeight - 5 * DeviceDependentScale));
 		
-		mScrollPosition = GUILayout.BeginScrollView (mScrollPosition, false, false, GUILayout.Width (Screen.width - (ABOUT_TEXT_MARGIN * DeviceDependentScale)), 
+		mScrollPosition = GUILayout.BeginScrollView (mScrollPosition, false, true, GUILayout.Width (Screen.width - (ABOUT_TEXT_MARGIN * DeviceDependentScale)), 
 		                                            GUILayout.Height (Screen.height - mStartButtonAreaHeight - mAboutTitleHeight));
 		
 		GUILayout.BeginHorizontal ();
