@@ -1,3 +1,15 @@
-El Lago Sandoval (Sandoval qucha en quechua) es un lago de Perú, cercano a la ciudad de Puerto Maldonado, capital del Departamento de Madre de Dios, en la cuenca amazónica. Tiene aguas claras y tranquilas. 
+Bienvenido a la Aplicacion de Realidad Aumentada para Edificios Historicos de Valencia. Esta Aplicacion ha sido desarrollada como parte del Proyecto Final de Carrera del Alumno: <b>SERGIO SANCHEZ ORTIZ</b> de la <b>"Escuela Tecnica Superior de Informatica"</b> de la <b>Universidad Politecnica de Valencia</b>.
 
-Existe un Plan del Sitio Sandoval dentro del Plan Maestro RN Tambopata,2 a través de la cual la Sociedad Zoológica de Francfort protege la zona.3
+- Guia de Uso:
+
+1- Centre el objetivo de la camara sobre el mapa turistico de Valencia.
+2- Cuando se muestren los puntos de Interes, el usuario podra interactuar con ellos.
+3- En el menu desplegado, el usuario podra visualizar un modelo3d (Icono Rojo) y leer informacion del monumento.
+4- Al hacer click sobre el botón de "Maps" el usuario podra utilizar el GPS para ir hacia el monumento.
+5- El Botón de "Atras" mostrara la ayuda nuevamente.
+6- En el modo visulizador el usuario podra utilizar los gestos "SWIPE" para manipular la escena.
+7- Durante en modo Visualizador, una pulsacion continua, mostrara el menu de camara.
+
+Gracias por utilizar la APP de Realidad Aumentada de Valencia. Recuerda que esto solo es una version de prueba para poder contemplar la potencia de este tipo de Aplicaciones en el campo del Turismo.
+
+Contacto con el Desarrollador: <b>SERSANOR@GMAIL.COM</b>

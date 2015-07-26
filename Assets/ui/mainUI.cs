@@ -25,7 +25,6 @@ public class mainUI : MonoBehaviour
 	private GUISkin mUISkin;
 	private Vector2 mScrollPosition;
 	public System.Action OnStartButtonTapped;
-	private bool mustDraw = true;
 	private RaycastHit hit;
 	public Camera Camera;
 	public int timer;
@@ -47,7 +46,11 @@ public class mainUI : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-
+		Screen.autorotateToPortrait = true;
+		Screen.autorotateToPortraitUpsideDown = true;
+		Screen.autorotateToLandscapeLeft = true;
+		Screen.autorotateToLandscapeRight = true;
+		Screen.orientation = ScreenOrientation.AutoRotation;
 		//CALL CAMERA
 		m_AboutText = Resources.Load ("PFC_About") as TextAsset;
 		mAboutTitleBgStyle = new GUIStyle ();
@@ -58,6 +61,31 @@ public class mainUI : MonoBehaviour
 		mOKButtonBgStyle.font = Resources.Load ("SourceSansPro-Regular_big_xhdpi") as Font;
 		mUISkin = Resources.Load ("Images/ButtonSkinsXHDPI") as GUISkin;
 		mUISkin.label.font = Resources.Load ("SourceSansPro-Regular") as Font;
+
+		//DPI CONF
+		if (Screen.dpi > 300) {
+			// load and set gui style
+			mUISkin = Resources.Load ("Images/ButtonSkinsXHDPI") as GUISkin;
+			mAboutTitleBgStyle.font = Resources.Load ("SourceSansPro-Regular_big_xhdpi") as Font;
+			mOKButtonBgStyle.font = Resources.Load ("SourceSansPro-Regular_big_xhdpi") as Font;
+		} else if (Screen.dpi > 260) {
+			// load and set gui style
+			mUISkin = Resources.Load ("Images/ButtonSkins") as GUISkin;
+			mAboutTitleBgStyle.font = Resources.Load ("SourceSansPro-Regular_big_xhdpi") as Font;
+			mOKButtonBgStyle.font = Resources.Load ("SourceSansPro-Regular_big_xhdpi") as Font;
+		} else if (Screen.height == 1848 && Screen.width == 1200) {
+			mUISkin = Resources.Load ("Images/ButtonSkinsXHDPI") as GUISkin;
+			mAboutTitleBgStyle.font = Resources.Load ("SourceSansPro-Regular_big_xhdpi") as Font;
+			mOKButtonBgStyle.font = Resources.Load ("SourceSansPro-Regular_big_xhdpi") as Font;
+		} else {
+			// load and set gui style
+			mUISkin = Resources.Load ("Images/ButtonSkinsSmall") as GUISkin;
+			mUISkin.label.font = Resources.Load ("SourceSansPro-Regular_Small") as Font;
+			mAboutTitleBgStyle.font = Resources.Load ("SourceSansPro-Regular") as Font;
+			mOKButtonBgStyle.font = Resources.Load ("SourceSansPro-Regular") as Font;
+		}
+		//END DPI CONF
+
 		mOKButtonBgStyle.normal.textColor = Color.white;
 		mAboutTitleBgStyle.alignment = TextAnchor.MiddleLeft;
 		mOKButtonBgStyle.alignment = TextAnchor.MiddleCenter;
@@ -92,8 +120,15 @@ public class mainUI : MonoBehaviour
 		if (Input.GetKey (KeyCode.Menu)) {
 			StLoad = 0;
 		}
+		if (Input.GetKeyDown (KeyCode.Escape)) {
+			if (!GUIdrawed) {
+				StLoad = 0;
+			} else {
+				objectTapped = false;
+				StLoad++;
+			}
+		}
 	}
-
 	void callAutoFocus ()
 	{
 		CameraDevice.Instance.SetFocusMode (CameraDevice.FocusMode.FOCUS_MODE_CONTINUOUSAUTO);
@@ -101,15 +136,20 @@ public class mainUI : MonoBehaviour
 
 	void OnGUI ()
 	{
-		if (mustDraw && StLoad == 0) {
+		GUIdrawed = true;
+
+		if (StLoad == 0) {
 			draw (mTitle);
-		}
+			GUIdrawed = true;
+			return;
+		} 
 		if (objectTapped) {
 			GUIdrawed = true;
 			draw (aux ["nombre"], aux ["descCompleta"], "", aux ["modelo3d"].ToString (), "Cerrar", aux ["coords"]);
-		} else {
-			GUIdrawed = false;
+			return;
 		}
+
+		GUIdrawed = false;
 	}
 
 	void OnApplicationPause (bool pause)
@@ -179,7 +219,7 @@ public class mainUI : MonoBehaviour
 			}
 			// if button was pressed, remember to make sure this event is not interpreted as a touch event somewhere else
 			if (GUI.Button (new Rect (left + width / 3, top, width / 3, height), button, mOKButtonBgStyle)) {
-				mustDraw = objectTapped = false;
+				objectTapped = false;
 				//update the vector pos
 				mScrollPosition = new Vector2 ();
 			}
@@ -189,7 +229,7 @@ public class mainUI : MonoBehaviour
 			}
 		} else if (maps != "") { // ONLY 2 BUTTONS
 			if (GUI.Button (new Rect (left, top, width / 3, height), button, mOKButtonBgStyle)) {
-				mustDraw = objectTapped = false;
+				objectTapped = false;
 				//update the vector pos
 				mScrollPosition = new Vector2 ();
 			}
@@ -198,7 +238,7 @@ public class mainUI : MonoBehaviour
 			}
 		} else { // JUST 1 BUTTON
 			if (GUI.Button (new Rect (left + width / 3, top, width / 3, height), button, mOKButtonBgStyle)) {
-				mustDraw = objectTapped = false;
+				objectTapped = false;
 				//update the vector pos
 				mScrollPosition = new Vector2 ();
 				StLoad++; // no more about
@@ -209,19 +249,23 @@ public class mainUI : MonoBehaviour
 	void checkInputMobile ()
 	{
 		
-		for (int i = 0; i < Input.touchCount; ++i)
+		for (int i = 0; i < Input.touchCount; ++i) {
 			if (Input.GetTouch (i).phase.Equals (TouchPhase.Began)) {
-				{
-					Ray ray = Camera.main.ScreenPointToRay (Input.GetTouch (i).position);
-					if (Physics.Raycast (ray, out hit)) {
-						hit.transform.gameObject.SendMessage ("OnMouseDown");
-						aux = J ["pdi"] [hit.transform.gameObject.name];
-						elementName = hit.transform.gameObject.name;
-						objectTapped = true;
-					}
+				Ray ray = Camera.main.ScreenPointToRay (Input.GetTouch (i).position);
+				if (Physics.Raycast (ray, out hit)) {
+					hit.transform.gameObject.SendMessage ("OnMouseDown");
+					aux = J ["pdi"] [hit.transform.gameObject.name];
+					elementName = hit.transform.gameObject.name;
+					objectTapped = true;
 				}
-			
 			}
+//			if (Input.GetTouch (i).phase.Equals (TouchPhase.Stationary)) {
+//				if (!CameraDevice.Instance.SetFlashTorchMode (true))
+//					CameraDevice.Instance.SetFlashTorchMode (true);
+//				else
+//					CameraDevice.Instance.SetFlashTorchMode (false);
+//			}
+		}
 	}
 	
 	void checkInputWindows ()

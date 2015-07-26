@@ -13,9 +13,12 @@ public class visUI : MonoBehaviour
 	private string AssetName;
 	public Camera mainCamera;
 	private JSONNode aux;
+	private bool menu = false;
 
 	void Start ()
 	{
+		//SCREEN ORIENTATION
+		Screen.orientation = ScreenOrientation.LandscapeLeft;
 
 		aux = mainUI.element;
 		if (aux != null) {
@@ -25,6 +28,7 @@ public class visUI : MonoBehaviour
 			StartCoroutine (Download ());
 		} else
 			Debug.Log ("No Info");
+		
 	}
 
 	void Update ()
@@ -84,14 +88,15 @@ public class visUI : MonoBehaviour
 	void rotate (string pos)
 	{
 		if (pos == "up")
-			mBundleInstance.transform.Rotate (Vector3.up * Time.deltaTime * speedRotation);
+			mainCamera.transform.RotateAround (mBundleInstance.transform.position, Vector3.right, Time.deltaTime * speedRotation);
 		if (pos == "down")
-			mBundleInstance.transform.Rotate (Vector3.down * Time.deltaTime * speedRotation);
+			mainCamera.transform.RotateAround (mBundleInstance.transform.position, Vector3.left, Time.deltaTime * speedRotation);
 		if (pos == "left")
 			mBundleInstance.transform.Rotate (Vector3.up * Time.deltaTime * speedRotation);
 		if (pos == "right") {
 			mBundleInstance.transform.Rotate (Vector3.down * Time.deltaTime * speedRotation);
 		}
+		mainCamera.transform.LookAt (mBundleInstance.transform.position);
 	}
 
 
@@ -112,11 +117,14 @@ public class visUI : MonoBehaviour
 					startPos = touch.position;
 
 					break;
+				case TouchPhase.Stationary:
+					menu = true;
+					break;
 
 				case TouchPhase.Moved:
 					float swipeDistHorizontal = (new Vector3 (touch.position.x, 0, 0) - new Vector3 (startPos.x, 0, 0)).magnitude;
 					
-					if (swipeDistHorizontal > minSwipeDistX) {
+					if (swipeDistHorizontal > minSwipeDistX && touch.position.y > Screen.height / 5) {
 						
 						float swipeValue = Mathf.Sign (touch.position.x - startPos.x);
 						
@@ -130,5 +138,31 @@ public class visUI : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	void OnGUI ()
+	{
+		if (menu) {
+			GUI.Box (new Rect (0, Screen.height - Screen.height / 5, Screen.width, Screen.height), "Camera Controls");
+			GUILayout.BeginHorizontal ();
+
+			if (GUI.Button (new Rect (0, Screen.height - Screen.height / 6, Screen.width / 5, Screen.height / 6), "UP")) {
+				rotate ("up");
+			}
+			if (GUI.Button (new Rect (Screen.width / 5, Screen.height - Screen.height / 6, Screen.width / 5, Screen.height / 6), "DOWN")) {
+				rotate ("down");
+			}
+			if (GUI.Button (new Rect (Screen.width * 2 / 5, Screen.height - Screen.height / 6, Screen.width / 5, Screen.height / 6), "CLOSE")) {
+				menu = false;
+			}
+			if (GUI.Button (new Rect (Screen.width * 3 / 5, Screen.height - Screen.height / 6, Screen.width / 5, Screen.height / 6), "ZOOM IN")) {
+				mainCamera.fieldOfView -= 5.0f; 
+			}
+			if (GUI.Button (new Rect (Screen.width * 4 / 5, Screen.height - Screen.height / 6, Screen.width / 5, Screen.height / 6), "ZOOM OUT")) {
+				mainCamera.fieldOfView += 5.0f;
+			}
+			GUILayout.EndHorizontal ();
+		}
+
 	}
 }
