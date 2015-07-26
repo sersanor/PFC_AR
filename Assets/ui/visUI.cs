@@ -47,17 +47,36 @@ public class visUI : MonoBehaviour
 				throw new UnityException ("WWW Download had an error: " + www .error);
 				
 			AssetBundle bundle = www .assetBundle;
+			mBundleInstance = Instantiate (bundle.mainAsset) as GameObject;
+			mBundleInstance.transform.localPosition = new Vector3 (0, 0, 0);
 			if (AssetName == "CValencia") {
-				Debug.Log ("Drawing");
-				mBundleInstance = Instantiate (bundle.mainAsset) as GameObject;
-				mBundleInstance.transform.localPosition = new Vector3 (0, 0, 0);
 				mainCamera.transform.position = new Vector3 (0, 0.2F, -1);
-				mainCamera.transform.LookAt (mBundleInstance.transform.position);
-
-			} else {
-				Debug.Log ("NOT BUNDLE");
-				mBundleInstance = Instantiate (bundle.LoadAsset (AssetName)) as GameObject;
 			}
+			if (AssetName == "TSerrano") {
+				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.6);
+			}
+			if (AssetName == "BPublica") {
+				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.8);
+			}
+			if (AssetName == "TQuart") {
+				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.5);
+			}
+			if (AssetName == "Lonja") {
+				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.7);
+			}
+			if (AssetName == "PGeneralitat") {
+				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.65);
+			}
+			if (AssetName == "Miguelete") {
+				mainCamera.transform.position = new Vector3 (0, 0.3F, -0.5);
+			}
+			if (AssetName == "MUVIM") {
+				mainCamera.transform.position = new Vector3 (0, 0.2F, -1);
+			}
+			if (AssetName == "MColon") {
+				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.6);
+			}
+			mainCamera.transform.LookAt (mBundleInstance.transform.position);
 		}
 	}
 	// END DOWNLOAD ASSETS
