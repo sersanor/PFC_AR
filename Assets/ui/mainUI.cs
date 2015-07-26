@@ -153,8 +153,8 @@ public class mainUI : MonoBehaviour
 		                             Screen.width - (ABOUT_TEXT_MARGIN * DeviceDependentScale),
 		                             Screen.height - (mStartButtonAreaHeight) - mAboutTitleHeight - 5 * DeviceDependentScale));
 		
-		mScrollPosition = GUILayout.BeginScrollView (mScrollPosition, false, true, GUILayout.Width (Screen.width - (ABOUT_TEXT_MARGIN * DeviceDependentScale)), 
-		                                            GUILayout.Height (Screen.height - mStartButtonAreaHeight - mAboutTitleHeight));
+		mScrollPosition = GUILayout.BeginScrollView (mScrollPosition, false, false, GUILayout.Width (Screen.width - (ABOUT_TEXT_MARGIN * DeviceDependentScale)), 
+		                                             GUILayout.Height (Screen.height - mStartButtonAreaHeight - mAboutTitleHeight - START_BUTTON_VERTICAL_MARGIN * DeviceDependentScale));
 		
 		GUILayout.BeginHorizontal ();
 		GUILayout.FlexibleSpace ();
