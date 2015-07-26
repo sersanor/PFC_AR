@@ -4,7 +4,6 @@ using SimpleJSON;
 
 public class visUI : MonoBehaviour
 {
-	
 	public float minSwipeDistY;
 	public float minSwipeDistX;
 	public GameObject objeto;
@@ -53,28 +52,28 @@ public class visUI : MonoBehaviour
 				mainCamera.transform.position = new Vector3 (0, 0.2F, -1);
 			}
 			if (AssetName == "TSerrano") {
-				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.6);
+				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.6F);
 			}
 			if (AssetName == "BPublica") {
-				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.8);
+				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.8F);
 			}
 			if (AssetName == "TQuart") {
-				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.5);
+				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.5F);
 			}
 			if (AssetName == "Lonja") {
-				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.7);
+				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.7F);
 			}
 			if (AssetName == "PGeneralitat") {
-				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.65);
+				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.65F);
 			}
 			if (AssetName == "Miguelete") {
-				mainCamera.transform.position = new Vector3 (0, 0.3F, -0.5);
+				mainCamera.transform.position = new Vector3 (0, 0.3F, -0.5F);
 			}
 			if (AssetName == "MUVIM") {
 				mainCamera.transform.position = new Vector3 (0, 0.2F, -1);
 			}
 			if (AssetName == "MColon") {
-				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.6);
+				mainCamera.transform.position = new Vector3 (0, 0.2F, -0.6F);
 			}
 			mainCamera.transform.LookAt (mBundleInstance.transform.position);
 		}
@@ -98,6 +97,11 @@ public class visUI : MonoBehaviour
 
 	void touchAndroid ()
 	{
+		//ESCAPE BUTTOn & BACK BUTTON
+		if (Input.GetKeyDown (KeyCode.Escape)) {
+			Application.LoadLevel ("main_scene");
+		}
+
 		{
 			//#if UNITY_ANDROID
 			if (Input.touchCount > 0) {

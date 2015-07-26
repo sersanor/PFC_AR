@@ -9,6 +9,7 @@ public class mainUI : MonoBehaviour
 	//GLOBAL CONST START
 	public static JSONNode element;
 	public static string elementName;
+	private static int StLoad = 0;
 	//GLOBAL CONST END
 	private Rect box; //UI BOX RECT
 	private GUIStyle mStyle; //BACKGROUND IMAGE
@@ -85,6 +86,11 @@ public class mainUI : MonoBehaviour
 		} else {
 			checkInputMobile ();
 		}
+
+		//MENU BUTTON
+		if (Input.GetKey (KeyCode.Menu)) {
+			StLoad = 0;
+		}
 	}
 
 	void callAutoFocus ()
@@ -94,11 +100,11 @@ public class mainUI : MonoBehaviour
 
 	void OnGUI ()
 	{
-		if (mustDraw) {
+		if (mustDraw && StLoad == 0) {
 			draw (mTitle);
 		}
 		if (objectTapped) {
-			draw (aux ["nombre"], aux ["descCompleta"], "", aux ["coords"], aux ["modelo3d"], "Cerrar", aux ["coords"]);
+			draw (aux ["nombre"], aux ["descCompleta"], "", aux ["modelo3d"].ToString (), "Cerrar", aux ["coords"]);
 		}
 	}
 
@@ -121,7 +127,7 @@ public class mainUI : MonoBehaviour
 		GUI.Box (box, "", mStyle);
 	}
 
-	void draw (string title, string desc="about", string img="", string coords="", string model3d="", string button="OK", string maps="")
+	void draw (string title, string desc="about", string img="", string model3d="", string button="OK", string maps="")
 	{
 		float scale = 1 * DeviceDependentScale;
 		mAboutTitleHeight = 80.0f * scale;
@@ -191,7 +197,7 @@ public class mainUI : MonoBehaviour
 				mustDraw = objectTapped = false;
 				//update the vector pos
 				mScrollPosition = new Vector2 ();
-				//Application.LoadLevel("vis");
+				StLoad++; // no more about
 			}
 		}
 	} // END DRAW
